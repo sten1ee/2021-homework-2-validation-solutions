@@ -1,13 +1,15 @@
 package homework2
 
-case class RegistrationForm(name: String,
-                            email: String,
-                            password: String,
-                            passwordConfirmation: String,
-                            birthYear: String,
-                            birthMonth: String,
-                            birthDay: String,
-                            postalCode: String)
+case class RegistrationForm(
+  name: String,
+  email: String,
+  password: String,
+  passwordConfirmation: String,
+  birthYear: String,
+  birthMonth: String,
+  birthDay: String,
+  postalCode: String
+)
 
 sealed trait RegistrationFormError
 
@@ -34,13 +36,17 @@ case class InvalidDate(year: Int, month: Int, day: Int) extends DateError
 
 case class Email(user: String, domain: String)
 
-case class User(name: String,
-                email: Email,
-                passwordHash: String,
-                birthday: Date,
-                postalCode: Option[String])
+case class User(
+  name: String,
+  email: Email,
+  passwordHash: String,
+  birthday: Date,
+  postalCode: Option[String]
+)
 
 object UserRegistration {
-  def registerUser(userCountryPostalCodeVerifier: String => Boolean, today: Date)
-                  (form: RegistrationForm): Validated[RegistrationFormError, User] = ???
+  def registerUser(
+    userCountryPostalCodeVerifier: String => Boolean,
+    today: Date
+  )(form: RegistrationForm): Validated[RegistrationFormError, User] = ???
 }

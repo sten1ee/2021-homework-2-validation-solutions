@@ -1,13 +1,14 @@
 package homework2
 
 import homework2.UserRegistration.registerUser
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class UserRegistrationTest extends FlatSpec with Matchers {
+class UserRegistrationTest extends AnyFlatSpec with Matchers {
   "An empty form" should "generate errors for the non optional fields" in {
     val emptyForm = RegistrationForm("", "", "", "", "", "", "", "")
 
-    val validation = registerUser(Set.empty, Date(2019, 5, 4))(emptyForm)
+    val validation = registerUser(Set.empty, Date(2020, 1, 1))(emptyForm)
 
     validation.isValid shouldBe false
 
@@ -26,7 +27,7 @@ class UserRegistrationTest extends FlatSpec with Matchers {
       PasswordRequiresGreaterSymbolVariety
     )
 
-    birthdayErrors shouldEqual Some(Set(
+    birthdayErrors shouldBe Some(Set(
       YearIsNotAnInteger(""),
       MonthIsNotAnInteger(""),
       DayIsNotAnInteger("")

@@ -5,3 +5,7 @@ case class IO[A](unsafeRun: () => A) {
   def flatMap[B](f: A => IO[B]): IO[B] =
     IO(() => f(this.unsafeRun()).unsafeRun())
 }
+
+object IO {
+  def of[A](constant: A): IO[A] = IO(() => constant)
+}
