@@ -11,30 +11,14 @@ case class RegistrationForm(
   postalCode: String
 )
 
-sealed trait RegistrationFormError
-
-case object NameIsEmpty extends RegistrationFormError
-
-case class InvalidEmail(email: String) extends RegistrationFormError
-
-case object PasswordTooShort extends RegistrationFormError
-case object PasswordRequiresGreaterSymbolVariety extends RegistrationFormError
-case object PasswordsDoNotMatch extends RegistrationFormError
-
-case class InvalidBirthdayDate(dateErrors: Chain[DateError]) extends RegistrationFormError
-case class BirthdayDateIsInTheFuture(date: Date) extends RegistrationFormError
-
-case class InvalidPostalCode(code: String) extends RegistrationFormError
-
-sealed trait DateError
-case class YearIsNotAnInteger(year: String) extends DateError
-case class MonthIsNotAnInteger(month: String) extends DateError
-case class DayIsNotAnInteger(day: String) extends DateError
-case class MonthOutOfRange(month: Int) extends DateError
-case class DayOutOfRange(day: Int) extends DateError
-case class InvalidDate(year: Int, month: Int, day: Int) extends DateError
-
 case class Email(user: String, domain: String)
+
+object Email {
+  def unapply(email: String): Option[(String, String)] = email.split("@") match {
+    case Array(name, domain) if name.nonEmpty && domain.nonEmpty => Some((name, domain))
+    case _ => None
+  }
+}
 
 case class User(
   name: String,
@@ -45,8 +29,18 @@ case class User(
 )
 
 object UserRegistration {
+  import UserValidation._
+
   def registerUser(
     userCountryPostalCodeVerifier: String => Boolean,
     today: Date
-  )(form: RegistrationForm): Validated[RegistrationFormError, User] = ???
+  )(form: RegistrationForm): Validated[RegistrationFormError, User] = {
+    (
+      validateName(form.name),
+      validateEmail(form.email),
+      validatePassword(form.password, form.passwordConfirmation).map(PasswordUtils.hash),
+      validateBirthday(today)(form.birthYear, form.birthMonth, form.birthDay),
+      validatePostalCode(userCountryPostalCodeVerifier)(form.postalCode)
+    ).zipMap(User.apply)
+  }
 }

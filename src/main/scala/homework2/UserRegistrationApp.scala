@@ -56,8 +56,8 @@ object UserRegistrationApp {
     case PasswordsDoNotMatch => "Passwords do not match"
     case InvalidBirthdayDate(dateErrors) =>
       val errors = dateErrors.map {
-        case YearIsNotAnInteger(year) => s"Day $year is not an integer"
-        case MonthIsNotAnInteger(month) => s"Day $month is not an integer"
+        case YearIsNotAnInteger(year) => s"Year $year is not an integer"
+        case MonthIsNotAnInteger(month) => s"Month $month is not an integer"
         case DayIsNotAnInteger(day) => s"Day $day is not an integer"
 
         case MonthOutOfRange(month) => s"Month $month is out of range"
