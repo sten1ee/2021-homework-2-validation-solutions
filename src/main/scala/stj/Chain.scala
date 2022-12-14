@@ -11,6 +11,30 @@ sealed trait Chain[+A] {
     case Append(_, _) => listify.tail
   }
 
+  override def equals(that: Any) = that match {
+    case (thatChain: Chain[A]) => this.listify.equalsListified(thatChain.listify)
+    case _ => false
+  }
+
+  /** Assumes both this and that Chains are lisify-ed */
+  private def equalsListified[B >: A](that: Chain[B]): Boolean = this match {
+    case Singleton(thisVal) =>
+      val ThisVal = thisVal
+      that match {
+        case Singleton(ThisVal) => true
+        case _ => false
+      }
+
+    case Append(Singleton(thisVal), thisTail) =>
+      val ThisVal = thisVal
+      that match {
+        case Append(Singleton(ThisVal), thatTail) => thisTail.equalsListified(thatTail)
+        case _ => false
+      }
+
+    case _ => throw new IllegalArgumentException("this Chain is supposed to be listify-ed!")
+  }
+
   def isEmpty: Boolean = false
 
   def listify: Chain[A] =
@@ -60,4 +84,10 @@ sealed trait Chain[+A] {
 case class Singleton[+A](head: A) extends Chain[A]
 case class Append[+A](left: Chain[A], right: Chain[A]) extends Chain[A] {
   override def head: A = left.head
+}
+
+object Chain {
+  def apply[A](head: A, rest: A*): Chain[A] = {
+    rest.foldLeft(Singleton(head): Chain[A])((acc, a) => Append(acc, Singleton(a)))
+  }
 }
